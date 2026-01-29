@@ -1,0 +1,38 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Environment/config files (if you create them later)
+.env
+config.local.php
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Node modules (if you add any later)
+node_modules/
+
+# Composer (if you add it later)
+vendor/
+
+# Database dumps (if you create them)
+*.sql.backup
