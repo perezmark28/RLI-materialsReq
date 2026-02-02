@@ -7,6 +7,12 @@ require_login();
 $user = current_user();
 $role = current_role();
 
+// Admin/Super Admin can optionally view ALL requests (ignoring supervisor filter) via ?view=all
+$view_all = false;
+if ($role === 'admin' || $role === 'super_admin') {
+    $view_all = (isset($_GET['view']) && $_GET['view'] === 'all');
+}
+
 // For Admins: restrict view to requests assigned to their supervisor (based on username -> supervisors.initials).
 // Super Admin sees all requests.
 $supervisor_filter_id = null;
@@ -38,8 +44,9 @@ if ($role === 'viewer') {
     $where[] = "mr.user_id = ?";
     $types .= "i";
     $params[] = (int)$user['id'];
-} elseif ($role === 'admin' && $supervisor_filter_id !== null) {
-    // Admin sees only requests mapped to their supervisor initials
+} elseif ($role === 'admin' && !$view_all && $supervisor_filter_id !== null) {
+    // Admin sees only requests mapped to their supervisor initials,
+    // unless they explicitly choose "View All".
     $where[] = "mr.supervisor_id = ?";
     $types .= "i";
     $params[] = $supervisor_filter_id;
@@ -105,11 +112,22 @@ ui_layout_start('Requests - RLI', 'requests');
     <h1 class="text-2xl font-bold text-slate-900"><?php echo $role === 'viewer' ? 'My Requests' : 'All Requests'; ?></h1>
     <p class="text-slate-500 mt-1">Track requests and status updates.</p>
   </div>
-  <a href="create_request.php" class="px-4 py-2 rounded-xl bg-accentYellow text-black font-semibold hover:opacity-95">Create Request</a>
+  <div class="flex items-center gap-3">
+    <?php if ($role === 'admin' || $role === 'super_admin'): ?>
+      <a href="requests_print.php" target="_blank"
+         class="px-4 py-2 rounded-xl bg-bgGrey hover:bg-slate-200 text-slate-800 font-semibold">
+        View All (Printable)
+      </a>
+    <?php endif; ?>
+    <a href="create_request.php" class="px-4 py-2 rounded-xl bg-accentYellow text-black font-semibold hover:opacity-95">Create Request</a>
+  </div>
 </div>
 
 <div class="mt-6 flex items-end gap-3 flex-wrap">
   <form method="GET" action="requests.php" class="flex items-end gap-3 flex-wrap">
+    <?php if ($view_all): ?>
+      <input type="hidden" name="view" value="all">
+    <?php endif; ?>
     <div>
       <label for="q" class="block text-sm font-semibold text-slate-700 mb-2">Search</label>
       <input id="q" name="q" type="text" value="<?php echo htmlspecialchars($q); ?>"
