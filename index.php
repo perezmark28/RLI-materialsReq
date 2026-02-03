@@ -1,35 +1,111 @@
 <?php
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/ui_public.php';
+/**
+ * Main Front Controller
+ * Single entry point for all requests
+ */
 
-if (is_logged_in()) {
-    header('Location: home.php');
+// Test mode: access with ?_test=1 to see diagnostic info
+if (isset($_GET['_test'])) {
+    echo "<!DOCTYPE html><html><head><title>MVC Test</title></head><body>";
+    echo "<h1>✓ Index.php is accessible!</h1>";
+    echo "<p>REQUEST_URI: " . htmlspecialchars($_SERVER['REQUEST_URI']) . "</p>";
+    echo "<p>SCRIPT_NAME: " . htmlspecialchars($_SERVER['SCRIPT_NAME']) . "</p>";
+    echo "</body></html>";
     exit;
 }
 
-ui_public_head('RLI - Landing');
-ui_public_shell_start();
-?>
+// Initialize application
+require_once __DIR__ . '/config/bootstrap.php';
 
-<h1 class="text-2xl font-bold text-slate-900">Welcome</h1>
-<p class="text-slate-600 mt-2">
-  Sign in to create and track material requests.
-</p>
+// Handle errors
+if (APP_ENV === 'development') {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    error_reporting(E_ALL);
+}
 
-<div class="mt-6 flex gap-3 flex-wrap">
-  <a href="login.php" class="px-5 py-3 rounded-2xl bg-accentYellow text-black font-semibold hover:opacity-95">Login</a>
-  <a href="signup.php" class="px-5 py-3 rounded-2xl bg-bgGrey hover:bg-slate-200 text-slate-900 font-semibold">Sign Up</a>
-</div>
+// Create router
+$router = new \App\Core\Router();
 
-<div class="mt-8 rounded-2xl bg-bgGrey border border-slate-100 p-4">
-  <div class="text-sm text-slate-500">Default accounts (if you ran setup)</div>
-  <div class="mt-2 text-sm text-slate-700 leading-6">
-    Admin: <span class="font-semibold">mts / admin123</span>, <span class="font-semibold">pjj / admin123</span>, <span class="font-semibold">alu / admin123</span><br/>
-    Super Admin: <span class="font-semibold">apl / superadmin123</span>
-  </div>
-</div>
+// Define routes
+// Public routes
+$router->get('/', 'Home@index');
+$router->get('/login', 'Auth@loginPage');
+$router->post('/login', 'Auth@login');
+$router->get('/signup', 'Auth@signupPage');
+$router->post('/signup', 'Auth@signup');
+$router->get('/logout', 'Auth@logout');
 
-<?php
-ui_public_shell_end();
-?>
+// Protected routes
+$router->get('/home', 'Home@home');
+$router->get('/dashboard', 'Home@dashboard');
+$router->get('/profile', 'Home@profile');
+$router->post('/profile', 'Home@profile');
+$router->get('/statistics', 'Home@statistics');
+
+// Request routes (specific paths before {id} so /requests/print and /requests/create match first)
+$router->get('/requests', 'Request@index');
+$router->get('/requests/create', 'Request@create');
+$router->post('/requests/create', 'Request@store');
+$router->get('/requests/print', 'Request@printAll');
+$router->get('/requests/{id}', 'Request@show');
+$router->get('/requests/{id}/edit', 'Request@edit');
+$router->post('/requests/{id}/edit', 'Request@update');
+$router->post('/requests/{id}/delete', 'Request@delete');
+$router->post('/requests/{id}/approve', 'Request@approve');
+$router->post('/requests/{id}/decline', 'Request@decline');
+$router->get('/supervisors/{id}/info', 'Request@supervisorInfo');
+
+// User management (super admin)
+$router->get('/users', 'User@index');
+$router->get('/users/create', 'User@create');
+$router->post('/users/create', 'User@store');
+$router->get('/users/{id}/edit', 'User@edit');
+$router->post('/users/{id}/edit', 'User@update');
+$router->post('/users/{id}/delete', 'User@delete');
+
+// Supplier management (admin/super admin)
+$router->get('/suppliers', 'Supplier@index');
+$router->get('/suppliers/create', 'Supplier@create');
+$router->post('/suppliers/create', 'Supplier@store');
+$router->get('/suppliers/{id}/edit', 'Supplier@edit');
+$router->post('/suppliers/{id}/edit', 'Supplier@update');
+$router->post('/suppliers/{id}/delete', 'Supplier@delete');
+
+// Dispatch the request
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// Debug logging (remove after testing)
+if (APP_ENV === 'development') {
+    error_log("REQUEST_URI: " . $_SERVER['REQUEST_URI']);
+    error_log("SCRIPT_NAME: " . $_SERVER['SCRIPT_NAME']);
+    error_log("PATH before processing: " . $path);
+}
+
+// Remove base path if running in subdirectory
+$base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+if (!empty($base_path) && strpos($path, $base_path) === 0) {
+    $path = substr($path, strlen($base_path));
+}
+$path = $path ?: '/';
+
+// Debug logging
+if (APP_ENV === 'development') {
+    error_log("Computed base_path: " . $base_path);
+    error_log("Final PATH: " . $path);
+}
+
+try {
+    $router->dispatch($path);
+} catch (\Exception $e) {
+    if (APP_ENV === 'development') {
+        echo "Error: " . $e->getMessage();
+        echo "\n\nTrace:\n" . $e->getTraceAsString();
+    } else {
+        http_response_code(500);
+        echo "500 Internal Server Error";
+    }
+}
 

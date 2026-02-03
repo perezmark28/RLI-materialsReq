@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+    # Enable rewrite engine
+    RewriteEngine On
+    
+    # Set base URL (adjust if running in a subdirectory)
+    RewriteBase /RLI-materialsReq/
+    
+    # Do not rewrite requests to actual files
+    RewriteCond %{REQUEST_FILENAME} !-f
+    
+    # Do not rewrite requests to actual directories
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Rewrite all other requests to index.php
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</IfModule>
+
+# Optional: Enable gzip compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript
+</IfModule>
+
+# Optional: Set proper headers
+<IfModule mod_headers.c>
+    Header set Cache-Control "max-age=3600, public"
+</IfModule>

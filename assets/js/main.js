@@ -28,7 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!id) return;
 
         try {
-            const res = await fetch(`get_supervisor.php?id=${encodeURIComponent(id)}`, {
+            const baseUrl = form?.dataset?.supervisorUrl || 'get_supervisor.php';
+            const url = baseUrl.includes('get_supervisor.php')
+                ? `${baseUrl}?id=${encodeURIComponent(id)}`
+                : `${baseUrl}/${encodeURIComponent(id)}/info`;
+            const res = await fetch(url, {
                 headers: { 'Accept': 'application/json' }
             });
             const data = await res.json();
@@ -167,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="mt-4 text-slate-700">${message}</div>
             <div class="mt-6 flex gap-3 justify-end">
-              <a href="requests.php" class="px-4 py-3 rounded-2xl bg-bgGrey hover:bg-slate-200 text-slate-900 font-semibold">View Requests</a>
+              <a href="${form?.dataset?.requestsUrl || 'requests.php'}" class="px-4 py-3 rounded-2xl bg-bgGrey hover:bg-slate-200 text-slate-900 font-semibold">View Requests</a>
               <button type="button" id="rliSuccessOk" class="px-4 py-3 rounded-2xl bg-accentYellow text-black font-semibold hover:opacity-95">OK</button>
             </div>
           </div>
@@ -235,8 +239,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Prepare form data
         const formData = new FormData(form);
 
-        // Submit via AJAX
-        fetch('save_request.php', {
+        // Submit via AJAX (use form action if provided)
+        const submitUrl = form?.getAttribute('action') || 'save_request.php';
+        fetch(submitUrl, {
             method: 'POST',
             body: formData
         })

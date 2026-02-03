@@ -37,7 +37,9 @@ function ui_public_shell_start(): void {
       <div class="hidden lg:flex flex-col justify-between rounded-card bg-ink text-white p-8 shadow-soft">
         <div>
           <div class="inline-flex items-center gap-3">
-            <div class="h-10 w-10 rounded-2xl bg-accentYellow"></div>
+            <div class="h-12 w-12 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
+              <span class="text-xl font-black text-black">RLHI</span>
+            </div>
             <div>
               <div class="text-2xl font-bold tracking-tight">RLHI</div>
               <div class="text-white/70 text-sm">Material Request System</div>

@@ -15,33 +15,35 @@ function ui_layout_start(string $title, string $active = ''): void {
 
     // Build role-based nav
     $nav = [];
+    $base = defined('BASE_PATH') ? BASE_PATH : '';
+
     if ($role === 'viewer') {
         $nav = [
-            ['key'=>'home','label'=>'Home','href'=>'home.php','icon'=>'home'],
-            ['key'=>'create','label'=>'Create Request','href'=>'create_request.php','icon'=>'plus'],
-            ['key'=>'requests','label'=>'My Requests','href'=>'requests.php','icon'=>'list'],
-            ['key'=>'profile','label'=>'Profile','href'=>'profile.php','icon'=>'user'],
+            ['key'=>'home','label'=>'Home','href'=> $base . '/home','icon'=>'home'],
+            ['key'=>'create','label'=>'Create Request','href'=> $base . '/requests/create','icon'=>'plus'],
+            ['key'=>'requests','label'=>'My Requests','href'=> $base . '/requests','icon'=>'list'],
+            ['key'=>'profile','label'=>'Profile','href'=> $base . '/profile','icon'=>'user'],
         ];
     } elseif ($role === 'admin') {
         $nav = [
-            ['key'=>'home','label'=>'Home','href'=>'home.php','icon'=>'home'],
-            ['key'=>'dashboard','label'=>'Dashboard','href'=>'dashboard.php','icon'=>'grid'],
-            ['key'=>'create','label'=>'Create Request','href'=>'create_request.php','icon'=>'plus'],
-            ['key'=>'requests','label'=>'All Requests','href'=>'requests.php','icon'=>'list'],
-            ['key'=>'suppliers','label'=>'Suppliers','href'=>'suppliers.php','icon'=>'box'],
-            ['key'=>'statistics','label'=>'Statistics','href'=>'statistics.php','icon'=>'chart'],
-            ['key'=>'profile','label'=>'Profile','href'=>'profile.php','icon'=>'user'],
+            ['key'=>'home','label'=>'Home','href'=> $base . '/home','icon'=>'home'],
+            ['key'=>'dashboard','label'=>'Dashboard','href'=> $base . '/dashboard','icon'=>'grid'],
+            ['key'=>'create','label'=>'Create Request','href'=> $base . '/requests/create','icon'=>'plus'],
+            ['key'=>'requests','label'=>'All Requests','href'=> $base . '/requests','icon'=>'list'],
+            ['key'=>'suppliers','label'=>'Suppliers','href'=> $base . '/suppliers','icon'=>'box'],
+            ['key'=>'statistics','label'=>'Statistics','href'=> $base . '/statistics','icon'=>'chart'],
+            ['key'=>'profile','label'=>'Profile','href'=> $base . '/profile','icon'=>'user'],
         ];
     } elseif ($role === 'super_admin') {
         $nav = [
-            ['key'=>'home','label'=>'Home','href'=>'home.php','icon'=>'home'],
-            ['key'=>'dashboard','label'=>'Dashboard','href'=>'dashboard.php','icon'=>'grid'],
-            ['key'=>'create','label'=>'Create Request','href'=>'create_request.php','icon'=>'plus'],
-            ['key'=>'requests','label'=>'All Requests','href'=>'requests.php','icon'=>'list'],
-            ['key'=>'suppliers','label'=>'Suppliers','href'=>'suppliers.php','icon'=>'box'],
-            ['key'=>'statistics','label'=>'Statistics','href'=>'statistics.php','icon'=>'chart'],
-            ['key'=>'users','label'=>'User Accounts','href'=>'users.php','icon'=>'users'],
-            ['key'=>'profile','label'=>'Profile','href'=>'profile.php','icon'=>'user'],
+            ['key'=>'home','label'=>'Home','href'=> $base . '/home','icon'=>'home'],
+            ['key'=>'dashboard','label'=>'Dashboard','href'=> $base . '/dashboard','icon'=>'grid'],
+            ['key'=>'create','label'=>'Create Request','href'=> $base . '/requests/create','icon'=>'plus'],
+            ['key'=>'requests','label'=>'All Requests','href'=> $base . '/requests','icon'=>'list'],
+            ['key'=>'suppliers','label'=>'Suppliers','href'=> $base . '/suppliers','icon'=>'box'],
+            ['key'=>'statistics','label'=>'Statistics','href'=> $base . '/statistics','icon'=>'chart'],
+            ['key'=>'users','label'=>'User Accounts','href'=> $base . '/users','icon'=>'users'],
+            ['key'=>'profile','label'=>'Profile','href'=> $base . '/profile','icon'=>'user'],
         ];
     } else {
         $nav = [];
@@ -94,8 +96,13 @@ function ui_layout_start(string $title, string $active = ''): void {
             <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </button>
-        <div class="font-bold text-slate-900">RLHI</div>
-        <a href="logout.php" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-600 text-white text-xs font-semibold shadow-sm hover:bg-red-700">
+        <div class="flex items-center gap-2">
+          <div class="h-9 w-9 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
+            <span class="text-sm font-black text-black">RLHI</span>
+          </div>
+          <span class="font-bold text-slate-900">RLHI</span>
+        </div>
+        <a href="<?php echo $base; ?>/logout" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-600 text-white text-xs font-semibold shadow-sm hover:bg-red-700">
           <span>Logout</span>
         </a>
       </div>
@@ -109,9 +116,14 @@ function ui_layout_start(string $title, string $active = ''): void {
       class="fixed lg:static inset-y-0 left-0 z-50 w-[280px] bg-ink text-white px-6 py-8 flex flex-col
              transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out">
       <div class="mb-6 flex items-start justify-between gap-3">
-        <div>
-          <div class="text-2xl font-bold tracking-tight">RLHI</div>
-          <div class="text-white/70 text-sm mt-1">Material Request System</div>
+        <div class="flex items-center gap-3">
+          <div class="h-12 w-12 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
+            <span class="text-xl font-black text-black">RLHI</span>
+          </div>
+          <div>
+            <div class="text-2xl font-bold tracking-tight">RLHI</div>
+            <div class="text-white/70 text-sm mt-1">Material Request System</div>
+          </div>
         </div>
         <button type="button" id="rliSidebarClose" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20">
           <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
@@ -150,7 +162,7 @@ function ui_layout_start(string $title, string $active = ''): void {
       </nav>
 
       <div class="mt-auto pt-8">
-        <a href="logout.php"
+        <a href="<?php echo $base; ?>/logout"
            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700">
           Logout
         </a>
