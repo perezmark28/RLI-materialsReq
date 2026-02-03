@@ -33,9 +33,26 @@ $showSignup = ($initialForm === 'signup');
   </style>
 </head>
 <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-  <div id="authWrapper" class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex min-h-[640px] relative">
+  <div class="w-full max-w-5xl md:hidden mb-4">
+    <div class="rounded-3xl bg-black text-white p-5 shadow-2xl">
+      <div class="flex items-center gap-3">
+        <div class="h-12 w-12 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
+          <span class="text-xl font-black text-black">RLHI</span>
+        </div>
+        <div>
+          <div class="text-xl font-bold tracking-tight">RLHI</div>
+          <div class="text-white/80 text-sm">Material Request System</div>
+        </div>
+      </div>
+      <p class="mt-4 text-white/80 text-sm leading-relaxed">
+        A clean internal workflow for submitting, reviewing, and approving material requests.
+      </p>
+    </div>
+  </div>
+
+  <div id="authWrapper" class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row md:min-h-[640px] relative">
     <!-- Left slot: Signup form (visible when decorative has slid right) -->
-    <div class="w-1/2 min-h-[640px] flex flex-col justify-center p-8 lg:p-10 relative z-10">
+    <div class="w-full md:w-1/2 md:min-h-[640px] flex flex-col justify-center p-6 md:p-8 lg:p-10 relative z-10">
       <div id="signupFormWrap" class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0 flex items-center'; ?>" style="<?php echo !$showSignup ? 'visibility: hidden' : ''; ?>">
         <div class="w-full px-4">
           <h1 class="text-2xl font-bold text-gray-900">Create account</h1>
@@ -47,7 +64,7 @@ $showSignup = ($initialForm === 'signup');
             </div>
           <?php endif; ?>
 
-          <form method="POST" action="<?php echo $base; ?>/signup" class="mt-6 flex flex-col gap-5 max-w-sm">
+          <form method="POST" action="<?php echo $base; ?>/signup" class="mt-6 flex flex-col gap-4 max-w-sm">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label for="signup_full_name" class="block text-sm font-semibold text-gray-700 mb-1.5">Full Name</label>
@@ -93,8 +110,8 @@ $showSignup = ($initialForm === 'signup');
     </div>
 
     <!-- Right slot: Login form (visible when decorative is on left) -->
-    <div class="w-1/2 min-h-[640px] flex flex-col justify-center p-8 lg:p-10 relative z-10">
-      <a href="<?php echo $base; ?>/" class="absolute top-6 right-6 text-sm font-semibold text-gray-600 hover:text-black z-20">Back</a>
+    <div class="w-full md:w-1/2 md:min-h-[640px] flex flex-col justify-center p-6 md:p-8 lg:p-10 relative z-10">
+      <a href="<?php echo $base; ?>/" class="md:absolute md:top-6 md:right-6 text-sm font-semibold text-gray-600 hover:text-black z-20 self-end mb-4 md:mb-0">Back</a>
       <div id="loginFormWrap" class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-0 pointer-events-none absolute inset-0 flex items-center' : 'opacity-100'; ?>" style="<?php echo $showSignup ? 'visibility: hidden' : ''; ?>">
         <div class="w-full px-4">
           <h1 class="text-2xl font-bold text-gray-900">Welcome home</h1>
@@ -143,8 +160,8 @@ $showSignup = ($initialForm === 'signup');
       </div>
     </div>
 
-    <!-- Decorative panel overlay: solid black (like home page), slides left → right (0.6s ease-in-out) -->
-    <div id="decorativePanel" class="panel-slide absolute top-0 bottom-0 w-1/2 z-20 flex flex-col justify-between p-8 lg:p-10 bg-black text-white rounded-l-3xl <?php echo $showSignup ? 'left-1/2 rounded-l-none rounded-r-3xl' : 'left-0'; ?>">
+    <!-- Decorative panel overlay (tablet/desktop only): slides left → right (0.6s ease-in-out) -->
+    <div id="decorativePanel" class="panel-slide hidden md:flex absolute top-0 bottom-0 w-1/2 z-20 flex-col justify-between p-8 lg:p-10 bg-black text-white rounded-l-3xl <?php echo $showSignup ? 'left-1/2 rounded-l-none rounded-r-3xl' : 'left-0'; ?>">
       <div>
         <div class="flex items-center gap-3">
           <div class="h-12 w-12 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
@@ -170,10 +187,13 @@ $showSignup = ($initialForm === 'signup');
       const signupWrap = document.getElementById('signupFormWrap');
       const showSignupBtn = document.getElementById('showSignupBtn');
       const showLoginBtn = document.getElementById('showLoginBtn');
+      const canSlidePanel = window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
 
       function showSignup() {
-        decorativePanel.classList.remove('left-0', 'rounded-l-3xl');
-        decorativePanel.classList.add('left-1/2', 'rounded-r-3xl', 'rounded-l-none');
+        if (decorativePanel && canSlidePanel) {
+          decorativePanel.classList.remove('left-0', 'rounded-l-3xl');
+          decorativePanel.classList.add('left-1/2', 'rounded-r-3xl', 'rounded-l-none');
+        }
         loginWrap.classList.add('opacity-0', 'pointer-events-none');
         loginWrap.style.visibility = 'hidden';
         signupWrap.classList.remove('opacity-0', 'pointer-events-none');
@@ -181,8 +201,10 @@ $showSignup = ($initialForm === 'signup');
       }
 
       function showLogin() {
-        decorativePanel.classList.remove('left-1/2', 'rounded-r-3xl', 'rounded-l-none');
-        decorativePanel.classList.add('left-0', 'rounded-l-3xl');
+        if (decorativePanel && canSlidePanel) {
+          decorativePanel.classList.remove('left-1/2', 'rounded-r-3xl', 'rounded-l-none');
+          decorativePanel.classList.add('left-0', 'rounded-l-3xl');
+        }
         signupWrap.classList.add('opacity-0', 'pointer-events-none');
         signupWrap.style.visibility = 'hidden';
         loginWrap.classList.remove('opacity-0', 'pointer-events-none');
