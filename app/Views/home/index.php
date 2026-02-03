@@ -29,12 +29,4 @@ ui_public_shell_start();
   </a>
 </div>
 
-<div class="rounded-2xl bg-bgGrey border border-slate-100 p-4">
-  <div class="text-sm text-slate-500">Default accounts (if you ran setup)</div>
-  <div class="mt-2 text-sm text-slate-700 leading-6">
-    <strong>Admin:</strong> mts / admin123<br/>
-    <strong>Super Admin:</strong> apl / superadmin123
-  </div>
-</div>
-
 <?php ui_public_shell_end(); ?>

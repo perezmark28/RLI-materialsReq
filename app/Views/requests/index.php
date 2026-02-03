@@ -110,18 +110,30 @@ ui_layout_start('Requests - RLI', 'requests');
                   <?php if ($canManage): ?>
                     <?php if ($isPending): ?>
                       <a href="<?php echo $base; ?>/requests/<?php echo $request['id']; ?>/edit"
-                         class="inline-flex px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-sm whitespace-nowrap">Edit</a>
+                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800"
+                         title="Edit">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 20h9" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </a>
                       <button type="button"
                               data-action="approve"
                               data-id="<?php echo (int)$request['id']; ?>"
-                              class="inline-flex px-3 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-sm whitespace-nowrap">
-                        Accept
+                              class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-green-600 hover:bg-green-700 text-white"
+                              title="Approve">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                       </button>
                       <button type="button"
                               data-action="decline"
                               data-id="<?php echo (int)$request['id']; ?>"
-                              class="inline-flex px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm whitespace-nowrap">
-                        Decline
+                              class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-600 hover:bg-red-700 text-white"
+                              title="Decline">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                       </button>
                       <?php if ($isSuperAdmin): ?>
                         <button type="button"
@@ -134,7 +146,22 @@ ui_layout_start('Requests - RLI', 'requests');
                       <?php endif; ?>
                     <?php else: ?>
                       <a href="<?php echo $base; ?>/requests/<?php echo $request['id']; ?>/edit"
-                         class="inline-flex px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-sm whitespace-nowrap">Edit</a>
+                         class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800"
+                         title="Edit">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 20h9" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </a>
+                      <?php if ($isSuperAdmin): ?>
+                        <button type="button"
+                                data-action="delete"
+                                data-id="<?php echo (int)$request['id']; ?>"
+                                title="Delete"
+                                class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-600 hover:bg-red-700 text-white">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                      <?php endif; ?>
                     <?php endif; ?>
                   <?php endif; ?>
                 </div>
@@ -156,6 +183,18 @@ ui_layout_start('Requests - RLI', 'requests');
     <div class="flex gap-3 justify-end">
       <button type="button" id="deleteConfirmCancel" class="px-4 py-2 rounded-xl bg-bgGrey hover:bg-slate-200 text-slate-800 font-semibold">Cancel</button>
       <button type="button" id="deleteConfirmOk" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Approve / Decline confirmation modal -->
+<div id="actionConfirmModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.4);">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6">
+    <h3 id="actionConfirmTitle" class="text-lg font-bold text-slate-900 mb-2">Confirm Action</h3>
+    <p id="actionConfirmMessage" class="text-slate-600 mb-6">Are you sure?</p>
+    <div class="flex gap-3 justify-end">
+      <button type="button" id="actionConfirmCancel" class="px-4 py-2 rounded-xl bg-bgGrey hover:bg-slate-200 text-slate-800 font-semibold">Cancel</button>
+      <button type="button" id="actionConfirmOk" class="px-4 py-2 rounded-xl text-white font-semibold">Confirm</button>
     </div>
   </div>
 </div>
@@ -200,8 +239,10 @@ ui_layout_start('Requests - RLI', 'requests');
       return;
     }
 
-    const verb = action === 'approve' ? 'approve' : 'decline';
-    if (!confirm(`Are you sure you want to ${verb} this request?`)) return;
+    if (action === 'approve' || action === 'decline') {
+      openActionModal(action, id);
+      return;
+    }
 
     try {
       const res = await fetch(`<?php echo $base; ?>/requests/${id}/${action}`, { method: 'POST' });
@@ -214,6 +255,58 @@ ui_layout_start('Requests - RLI', 'requests');
     } catch (err) {
       alert('Error: ' + err.message);
     }
+  });
+
+  const actionModal = document.getElementById('actionConfirmModal');
+  const actionTitle = document.getElementById('actionConfirmTitle');
+  const actionMessage = document.getElementById('actionConfirmMessage');
+  const actionCancel = document.getElementById('actionConfirmCancel');
+  const actionOk = document.getElementById('actionConfirmOk');
+  let actionState = null;
+
+  function openActionModal(action, requestId) {
+    if (!actionModal) return;
+    const isApprove = action === 'approve';
+    actionState = { action, requestId };
+    actionTitle.textContent = isApprove ? 'Approve Request' : 'Decline Request';
+    actionMessage.textContent = isApprove
+      ? 'Are you sure you want to approve this request?'
+      : 'Are you sure you want to decline this request?';
+    actionOk.textContent = isApprove ? 'Approve' : 'Decline';
+    actionOk.className = `px-4 py-2 rounded-xl text-white font-semibold ${isApprove ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`;
+
+    actionModal.classList.remove('hidden');
+    actionModal.classList.add('flex');
+  }
+
+  function closeActionModal() {
+    if (!actionModal) return;
+    actionModal.classList.add('hidden');
+    actionModal.classList.remove('flex');
+    actionState = null;
+  }
+
+  async function submitAction() {
+    if (!actionState) return;
+    const { action, requestId } = actionState;
+    closeActionModal();
+    try {
+      const res = await fetch(`<?php echo $base; ?>/requests/${requestId}/${action}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert(data.message || 'Action failed.');
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+
+  actionCancel?.addEventListener('click', closeActionModal);
+  actionOk?.addEventListener('click', submitAction);
+  actionModal?.addEventListener('click', (ev) => {
+    if (ev.target === actionModal) closeActionModal();
   });
 </script>
 <?php endif; ?>

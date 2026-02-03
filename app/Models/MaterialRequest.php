@@ -110,7 +110,7 @@ class MaterialRequest extends Model {
         $sql = "
             SELECT * FROM request_items
             WHERE request_id = ?
-            ORDER BY item_no ASC
+            ORDER BY item_no ASC, id ASC
         ";
         return $this->fetchAll($sql, "i", [$request_id]);
     }
@@ -248,5 +248,62 @@ class MaterialRequest extends Model {
             FROM material_requests
         ";
         return $this->fetchOne($sql);
+    }
+
+    /**
+     * Delete all items for a given request
+     */
+    public function deleteItemsByRequest($request_id) {
+        $sql = "DELETE FROM request_items WHERE request_id = ?";
+        return $this->execute($sql, "i", [$request_id]);
+    }
+
+    /**
+     * Get request counts per month for line chart (last N months)
+     * @param int $months Number of months to include
+     * @param int|null $supervisor_id Filter by supervisor (null = all)
+     * @return array [['label' => 'Jan 2025', 'count' => 5], ...]
+     */
+    public function getRequestsPerMonth($months = 6, $supervisor_id = null) {
+        $where = "created_at >= DATE_SUB(CURDATE(), INTERVAL ? MONTH)";
+        $params = [$months];
+        $types = "i";
+
+        if ($supervisor_id !== null) {
+            $where .= " AND supervisor_id = ?";
+            $params[] = $supervisor_id;
+            $types .= "i";
+        }
+
+        $sql = "
+            SELECT
+              DATE_FORMAT(created_at, '%Y-%m') as month_key,
+              DATE_FORMAT(created_at, '%b %Y') as month_label,
+              COUNT(*) as count
+            FROM material_requests
+            WHERE $where
+            GROUP BY month_key, month_label
+            ORDER BY month_key ASC
+        ";
+
+        $rows = $this->fetchAll($sql, $types, $params);
+
+        // Ensure all months in range have an entry (fill gaps with 0)
+        $result = [];
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $dt = new \DateTime();
+            $dt->modify("-$i months");
+            $key = $dt->format('Y-m');
+            $label = $dt->format('M Y');
+            $found = null;
+            foreach ($rows as $r) {
+                if ($r['month_key'] === $key) {
+                    $found = (int) $r['count'];
+                    break;
+                }
+            }
+            $result[] = ['label' => $label, 'count' => $found ?? 0];
+        }
+        return $result;
     }
 }

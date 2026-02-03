@@ -5,13 +5,22 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     let rowCounter = 1;
+    window.__rliSetRowCounter = function(count) {
+        rowCounter = count + 1;
+    };
     const tableBody = document.getElementById('itemsTableBody');
     const addRowBtn = document.getElementById('addRowBtn');
     const form = document.getElementById('materialRequestForm');
+    const resetBtn = document.getElementById('resetFormBtn');
+    const formMode = form?.dataset?.mode || 'create';
 
-    // Set today's date as default for date_requested
+    // Set today's date as default for date_requested if empty
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('date_requested').value = today;
+    const dateRequestedInput = document.getElementById('date_requested');
+    if (dateRequestedInput && !dateRequestedInput.value) {
+        dateRequestedInput.value = today;
+    }
+    const originalDateRequested = dateRequestedInput ? dateRequestedInput.value : today;
 
     // Supervisor dropdown - auto-populate email and mobile
     const supervisorSelect = document.getElementById('supervisor_id');
@@ -65,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <td class="py-3 px-4"><input type="number" name="items[${rowCounter}][price]" class="item-price w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500" step="0.01" min="0" required></td>
             <td class="py-3 px-4"><input type="text" name="items[${rowCounter}][amount]" class="item-amount w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 font-semibold" readonly></td>
             <td class="py-3 px-4"><input type="url" name="items[${rowCounter}][item_link]" class="item-link w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500" placeholder="https://..."></td>
-            <td class="py-3 px-4 text-right"><button type="button" class="px-3 py-2 rounded-xl bg-red-600 text-white font-semibold hover:opacity-95" onclick="removeRow(this)">Remove</button></td>
+            <td class="py-3 px-4 text-right"><button type="button" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-600 hover:bg-red-700 text-white" onclick="removeRow(this)" title="Remove row"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button></td>
         `;
         tableBody.appendChild(row);
         rowCounter++;
@@ -116,6 +125,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add row button event listener
     addRowBtn.addEventListener('click', addTableRow);
+
+    function initializeExistingRows() {
+        if (!tableBody) return;
+        const rows = tableBody.querySelectorAll('tr');
+        if (rows.length === 0) {
+            addTableRow();
+            return;
+        }
+        rows.forEach((row, index) => {
+            row.querySelector('.item-no').textContent = index + 1;
+            attachCalculationListeners(row);
+            // Ensure amount reflects quantity × price if blank
+            const amountInput = row.querySelector('.item-amount');
+            if (amountInput && !amountInput.value) {
+                calculateAmount(row);
+            }
+        });
+        rowCounter = rows.length + 1;
+    }
+
+    function resetFormFields() {
+        if (!form) return;
+        form.reset();
+        if (supervisorSelect) {
+            supervisorSelect.value = '';
+        }
+        syncSupervisorContact();
+        if (tableBody) {
+            tableBody.innerHTML = '';
+        }
+        rowCounter = 1;
+        addTableRow();
+        const dateRequested = document.getElementById('date_requested');
+        if (dateRequested) {
+            dateRequested.value = formMode === 'edit' ? originalDateRequested : today;
+        }
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetFormFields);
+    }
 
     // Show message function
     function showMessage(message, isSuccess) {
@@ -233,6 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Disable submit button
         const submitBtn = document.getElementById('submitBtn');
+        const submitDefaultText = submitBtn ? submitBtn.textContent : 'Submit Request';
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
 
@@ -259,17 +310,17 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             if (data.success) {
-                showSuccessPopup(`${data.message}<br><span class="font-semibold">Request ID:</span> ${data.request_id}`);
-                // Reset form after successful submission
-                setTimeout(() => {
-                    form.reset();
-                    // Clear table and add one empty row
-                    tableBody.innerHTML = '';
-                    rowCounter = 1;
-                    addTableRow();
-                    // Reset date_requested to today
-                    document.getElementById('date_requested').value = today;
-                }, 2000);
+                const requestIdLine = data.request_id
+                    ? `<br><span class="font-semibold">Request ID:</span> ${data.request_id}`
+                    : '';
+                showSuccessPopup(`${data.message}${requestIdLine}`);
+                if (formMode === 'create') {
+                    setTimeout(resetFormFields, 2000);
+                } else {
+                    const baseUrl = form?.dataset?.requestsUrl || '';
+                    const targetUrl = data.request_id ? `${baseUrl}/${data.request_id}` : baseUrl;
+                    setTimeout(() => window.location.href = targetUrl, 1500);
+                }
             } else {
                 showMessage(data.message || 'An error occurred. Please try again.', false);
             }
@@ -281,12 +332,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .finally(() => {
             // Re-enable submit button
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Request';
+            submitBtn.textContent = submitDefaultText;
         });
     });
 
-    // Add initial row on page load
-    addTableRow();
+    initializeExistingRows();
 });
 
 // Global function for remove button (accessible from inline onclick)

@@ -262,18 +262,15 @@ class RequestController extends Controller {
                 'supervisor_id' => $this->post('supervisor_id', '')
             ]);
 
-            // Delete old items and add new ones
-            // Note: In production, you may want more granular item management
             $items = $this->getItems();
-            $oldItems = $this->requestModel->getItems($id);
 
-            // Delete old items
-            foreach ($oldItems as $item) {
-                // Note: You'll need a deleteItem method in the model
-                // For now, we'll skip this - you can implement it
+            if (empty($items)) {
+                $this->json(['success' => false, 'message' => 'At least one item is required'], 400);
             }
 
-            // Add new items
+            // Replace existing items with submitted payload
+            $this->requestModel->deleteItemsByRequest($id);
+
             foreach ($items as $item_no => $item) {
                 $this->requestModel->addItem($id, [
                     'item_no' => $item_no + 1,
@@ -287,7 +284,7 @@ class RequestController extends Controller {
                 ]);
             }
 
-            $this->json(['success' => true, 'message' => 'Request updated successfully']);
+            $this->json(['success' => true, 'message' => 'Request updated successfully', 'request_id' => $id]);
 
         } catch (\Exception $e) {
             $this->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
@@ -414,10 +411,10 @@ class RequestController extends Controller {
     }
 
     /**
-     * Delete request
+     * Delete request (Super Admin only; any status allowed for data cleaning)
      */
     public function delete($id) {
-        require_login();
+        require_role(['super_admin']);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/requests/' . $id);
@@ -432,17 +429,7 @@ class RequestController extends Controller {
                 $this->json(['success' => false, 'message' => 'Request not found'], 404);
             }
 
-            // Authorization check
-            $user = current_user();
-            if (current_role() === 'viewer' && $request['user_id'] != $user['id']) {
-                $this->json(['success' => false, 'message' => 'Forbidden'], 403);
-            }
-
-            // Only allow deleting if pending
-            if ($request['status'] !== 'pending') {
-                $this->json(['success' => false, 'message' => 'Can only delete pending requests'], 400);
-            }
-
+            // Super Admin may delete any request (pending, approved, or declined)
             $this->requestModel->delete($id);
             $this->json(['success' => true, 'message' => 'Request deleted']);
 

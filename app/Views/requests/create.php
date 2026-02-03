@@ -21,17 +21,17 @@ ui_layout_start('Create Request - RLI', 'create');
 <form id="materialRequestForm"
       data-requests-url="<?php echo $base; ?>/requests"
       data-supervisor-url="<?php echo $base; ?>/supervisors"
+      data-mode="create"
       method="POST"
       action="<?php echo $base; ?>/requests/create"
-      class="mt-6 space-y-6">
-  <div class="rounded-2xl bg-bgGrey p-5">
-    <div class="text-sm font-semibold text-slate-700 mb-2">Particulars</div>
-    <textarea id="particulars" name="particulars" rows="2" required
-      class="w-full text-sm rounded-2xl border border-slate-200 bg-white px-3 py-2 focus:outline-none focus:ring-4 focus:ring-accentYellow/20 focus:border-accentYellow min-h-[60px]"
-      placeholder="Enter particulars..."></textarea>
-  </div>
-
+      class="mt-6 space-y-4">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="md:col-span-2">
+      <label class="block text-sm font-semibold text-slate-700 mb-2" for="particulars">Particulars</label>
+      <textarea id="particulars" name="particulars" rows="2" required
+        class="w-full text-sm rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:outline-none focus:ring-4 focus:ring-accentYellow/20 focus:border-accentYellow min-h-[60px]"
+        placeholder="Enter particulars..."></textarea>
+    </div>
     <div>
       <label class="block text-sm font-semibold text-slate-700 mb-2" for="requester_name">Requested By</label>
       <input id="requester_name" name="requester_name" type="text" required
@@ -75,8 +75,8 @@ ui_layout_start('Create Request - RLI', 'create');
     </div>
   </div>
 
-  <div class="rounded-2xl bg-bgGrey p-5">
-    <div class="flex items-center justify-between mb-3">
+  <div class="rounded-2xl bg-bgGrey p-4">
+    <div class="flex items-center justify-between mb-2">
       <div class="text-sm font-semibold text-slate-700">Request Items</div>
       <button type="button" id="addRowBtn" class="px-4 py-2 rounded-xl bg-accentYellow text-black font-semibold hover:opacity-95">
         Add New Row
@@ -106,9 +106,9 @@ ui_layout_start('Create Request - RLI', 'create');
     <button id="submitBtn" type="submit" class="px-5 py-3 rounded-2xl bg-accentYellow text-black font-semibold hover:opacity-95">
       Submit Request
     </button>
-    <a href="<?php echo $base; ?>/requests" class="px-5 py-3 rounded-2xl bg-bgGrey hover:bg-slate-200 text-slate-900 font-semibold">
+    <button type="button" id="resetFormBtn" class="px-5 py-3 rounded-2xl bg-bgGrey hover:bg-slate-200 text-slate-900 font-semibold">
       Reset Form
-    </a>
+    </button>
   </div>
 </form>
 

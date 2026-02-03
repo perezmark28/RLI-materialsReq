@@ -85,6 +85,80 @@ function ui_layout_start(string $title, string $active = ''): void {
       }
     }
   </script>
+  <style>
+    :root {
+      --rli-hover-shadow: 0 15px 35px rgba(15, 23, 42, 0.12);
+    }
+
+    button:not([disabled]),
+    [type="button"]:not([disabled]),
+    [type="submit"]:not([disabled]),
+    [role="button"],
+    .btn {
+      transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+    }
+
+    button:not([disabled]):hover,
+    [type="button"]:not([disabled]):hover,
+    [type="submit"]:not([disabled]):hover,
+    [role="button"]:hover,
+    .btn:hover {
+      background-color: #FFCC00;
+      color: #000;
+      border-color: #FFCC00;
+      transform: translateY(-2px);
+      box-shadow: var(--rli-hover-shadow);
+    }
+
+    button[class*="bg-red-"]:hover,
+    button[class*="bg-green-"]:hover,
+    [type="button"][class*="bg-red-"]:hover,
+    [type="button"][class*="bg-green-"]:hover,
+    a[class*="bg-red-"]:hover,
+    a[class*="bg-green-"]:hover {
+      background-color: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+    a {
+      transition: color .18s ease, opacity .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    a:hover {
+      opacity: .95;
+      color: #000;
+      background-color: #FFCC00;
+      border-color: #FFCC00;
+      box-shadow: var(--rli-hover-shadow);
+      transform: translateY(-1px);
+    }
+
+    table tbody tr {
+      transition: background-color .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+
+    table tbody tr:hover {
+      background-color: #FFF3C4;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+    }
+
+    .card-clickable,
+    .hover-card,
+    .rounded-2xl.cursor-pointer {
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background-color .2s ease;
+    }
+
+    .card-clickable:hover,
+    .hover-card:hover,
+    .rounded-2xl.cursor-pointer:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 25px 45px rgba(15, 23, 42, 0.15);
+      border-color: #FFCC00;
+      background-color: #FFF8DA;
+    }
+  </style>
 </head>
 <body class="font-sans bg-bgGrey">
   <div class="min-h-screen lg:flex">
@@ -103,6 +177,11 @@ function ui_layout_start(string $title, string $active = ''): void {
           <span class="font-bold text-slate-900">RLHI</span>
         </div>
         <a href="<?php echo $base; ?>/logout" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-600 text-white text-xs font-semibold shadow-sm hover:bg-red-700">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
           <span>Logout</span>
         </a>
       </div>
@@ -164,7 +243,12 @@ function ui_layout_start(string $title, string $active = ''): void {
       <div class="mt-auto pt-8">
         <a href="<?php echo $base; ?>/logout"
            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700">
-          Logout
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span>Logout</span>
         </a>
       </div>
     </aside>

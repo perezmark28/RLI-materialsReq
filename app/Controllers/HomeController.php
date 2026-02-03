@@ -63,27 +63,33 @@ class HomeController extends Controller {
         $user = current_user();
         $role = current_role();
 
+        $supervisor_id = null;
         if ($role === 'super_admin') {
             $stats = $requestModel->getStats();
         } else {
             $supervisor = $supervisorModel->findByInitials($user['username']);
             if ($supervisor) {
+                $supervisor_id = $supervisor['id'];
                 $stats = [
-                    'total' => $requestModel->count(['supervisor_id' => $supervisor['id']]),
-                    'pending' => $requestModel->count(['supervisor_id' => $supervisor['id'], 'status' => 'pending']),
-                    'approved' => $requestModel->count(['supervisor_id' => $supervisor['id'], 'status' => 'approved']),
-                    'declined' => $requestModel->count(['supervisor_id' => $supervisor['id'], 'status' => 'declined'])
+                    'total' => $requestModel->count(['supervisor_id' => $supervisor_id]),
+                    'pending' => $requestModel->count(['supervisor_id' => $supervisor_id, 'status' => 'pending']),
+                    'approved' => $requestModel->count(['supervisor_id' => $supervisor_id, 'status' => 'approved']),
+                    'declined' => $requestModel->count(['supervisor_id' => $supervisor_id, 'status' => 'declined'])
                 ];
             } else {
                 $stats = ['total' => 0, 'pending' => 0, 'approved' => 0, 'declined' => 0];
+                $supervisor_id = 0; // No supervisor = no data in charts
             }
         }
+
+        $chartMonthly = $requestModel->getRequestsPerMonth(6, $supervisor_id);
 
         $base = defined('BASE_PATH') ? BASE_PATH : '';
         $this->view('home/dashboard_stats', [
             'user' => $user,
             'role' => $role,
             'stats' => $stats,
+            'chartMonthly' => $chartMonthly,
             'base' => $base
         ]);
     }
