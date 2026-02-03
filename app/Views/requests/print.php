@@ -38,6 +38,7 @@ $globalNumber = 1;
       <thead>
         <tr>
           <th>Requester</th>
+          <th>Particulars</th>
           <th>Date Requested</th>
           <th>Date Needed</th>
           <th style="width: 50px;">NO.</th>
@@ -64,6 +65,7 @@ $globalNumber = 1;
                 <tr>
                   <?php if ($isFirstRowForThisRequest): ?>
                     <td rowspan="<?php echo $totalItems; ?>" class="font-bold"><?php echo htmlspecialchars($row['requester_name'] ?? ''); ?></td>
+                    <td rowspan="<?php echo $totalItems; ?>"><?php echo htmlspecialchars($row['particulars'] ?? ''); ?></td>
                     <td rowspan="<?php echo $totalItems; ?>"><?php echo htmlspecialchars($row['date_requested'] ?? ''); ?></td>
                     <td rowspan="<?php echo $totalItems; ?>"><?php echo htmlspecialchars($row['date_needed'] ?? ''); ?></td>
                   <?php endif; ?>

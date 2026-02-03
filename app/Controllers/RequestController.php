@@ -345,6 +345,7 @@ class RequestController extends Controller {
             SELECT
               mr.id,
               mr.requester_name,
+              mr.particulars,
               mr.date_requested,
               mr.date_needed,
               mr.status,
