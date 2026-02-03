@@ -36,7 +36,9 @@ $showSignup = ($initialForm === 'signup');
   <div id="authWrapper" class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row lg:min-h-[640px] relative">
     <!-- Left slot: Signup form (visible when decorative has slid right) -->
     <div id="signupSide" class="w-full lg:w-1/2 lg:min-h-[640px] flex flex-col justify-center p-6 lg:p-10 relative z-10 <?php echo $showSignup ? '' : 'hidden'; ?> lg:flex">
-      <div id="signupFormWrap" class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0 flex items-center'; ?>" style="<?php echo !$showSignup ? 'visibility: hidden' : ''; ?>">
+      <div id="signupFormWrap"
+           class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-100' : 'opacity-0 pointer-events-none'; ?> lg:absolute lg:inset-0 lg:flex lg:items-center"
+           style="<?php echo !$showSignup ? 'visibility: hidden' : ''; ?>">
         <div class="w-full px-4">
           <h1 class="text-2xl font-bold text-gray-900">Create account</h1>
           <p class="text-gray-500 mt-1 text-sm">Fill in your details to get started.</p>
@@ -95,7 +97,9 @@ $showSignup = ($initialForm === 'signup');
     <!-- Right slot: Login form (visible when decorative is on left) -->
     <div id="loginSide" class="w-full lg:w-1/2 lg:min-h-[640px] flex flex-col justify-center p-6 lg:p-10 relative z-10 <?php echo $showSignup ? 'hidden' : ''; ?> lg:flex">
       <a href="<?php echo $base; ?>/" class="lg:absolute lg:top-6 lg:right-6 text-sm font-semibold text-gray-600 hover:text-black z-20 self-end mb-4 lg:mb-0">Back</a>
-      <div id="loginFormWrap" class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-0 pointer-events-none absolute inset-0 flex items-center' : 'opacity-100'; ?>" style="<?php echo $showSignup ? 'visibility: hidden' : ''; ?>">
+      <div id="loginFormWrap"
+           class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-0 pointer-events-none' : 'opacity-100'; ?> lg:absolute lg:inset-0 lg:flex lg:items-center"
+           style="<?php echo $showSignup ? 'visibility: hidden' : ''; ?>">
         <div class="w-full px-4">
           <h1 class="text-2xl font-bold text-gray-900">Welcome home</h1>
           <p class="text-gray-500 mt-1 text-sm">Enter your credentials to continue.</p>
