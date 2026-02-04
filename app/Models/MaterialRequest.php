@@ -10,6 +10,28 @@ use App\Core\Model;
 class MaterialRequest extends Model {
     protected $table = 'material_requests';
 
+    private static $declineRemarksMigrated = false;
+
+    public function __construct() {
+        parent::__construct();
+        $this->ensureDeclineRemarksColumn();
+    }
+
+    /**
+     * Add decline_remarks column if missing (e.g. on Railway/production)
+     */
+    private function ensureDeclineRemarksColumn(): void {
+        if (self::$declineRemarksMigrated) {
+            return;
+        }
+        self::$declineRemarksMigrated = true;
+        $result = $this->conn->query("SHOW COLUMNS FROM material_requests LIKE 'decline_remarks'");
+        if ($result && $result->num_rows > 0) {
+            return;
+        }
+        $this->conn->query("ALTER TABLE material_requests ADD COLUMN decline_remarks TEXT NULL AFTER approved_at");
+    }
+
     /**
      * Get all requests with filtering
      */
