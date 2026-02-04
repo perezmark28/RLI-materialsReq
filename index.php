@@ -17,6 +17,20 @@ if (isset($_GET['_test'])) {
 // Initialize application
 require_once __DIR__ . '/config/bootstrap.php';
 
+// Security headers (improve grade on Security Headers / Snyk scan)
+if (!headers_sent()) {
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+    if ($isHttps) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains; preload');
+    }
+}
+
 // Handle errors
 if (APP_ENV === 'development') {
     ini_set('display_errors', 1);
@@ -50,6 +64,7 @@ $router->get('/requests', 'Request@index');
 $router->get('/requests/create', 'Request@create');
 $router->post('/requests/create', 'Request@store');
 $router->get('/requests/print', 'Request@printAll');
+$router->get('/requests/{id}/print', 'Request@printOne');
 $router->get('/requests/{id}', 'Request@show');
 $router->get('/requests/{id}/edit', 'Request@edit');
 $router->post('/requests/{id}/edit', 'Request@update');

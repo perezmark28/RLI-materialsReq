@@ -107,6 +107,14 @@ ui_layout_start('Requests - RLI', 'requests');
                 <div class="flex flex-wrap gap-2 justify-end">
                   <a href="<?php echo $base; ?>/requests/<?php echo $request['id']; ?>"
                      class="inline-flex px-3 py-2 rounded-xl bg-accentYellow text-black font-semibold hover:opacity-95 text-sm whitespace-nowrap">View</a>
+                  <?php if (($roleLower ?? '') === 'viewer' && ($request['status'] ?? '') === 'declined'): ?>
+                    <button type="button"
+                            data-view-remark
+                            data-remarks="<?php echo htmlspecialchars($request['decline_remarks'] ?? ''); ?>"
+                            class="inline-flex px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-sm whitespace-nowrap">
+                      View Remark
+                    </button>
+                  <?php endif; ?>
                   <?php if ($canManage): ?>
                     <?php if ($isPending): ?>
                       <a href="<?php echo $base; ?>/requests/<?php echo $request['id']; ?>/edit"
@@ -174,6 +182,38 @@ ui_layout_start('Requests - RLI', 'requests');
   </div>
 </div>
 
+<!-- View Remark modal (for viewers on declined requests) -->
+<div id="remarkModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.4);">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6">
+    <h3 class="text-lg font-bold text-slate-900 mb-2">Decline Remark</h3>
+    <p id="remarkModalContent" class="text-slate-600 mb-6 min-h-[60px]"></p>
+    <div class="flex justify-end">
+      <button type="button" id="remarkModalClose" class="px-4 py-2 rounded-xl bg-bgGrey hover:bg-slate-200 text-slate-800 font-semibold">Close</button>
+    </div>
+  </div>
+</div>
+<script>
+  document.querySelectorAll('[data-view-remark]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const remarks = this.getAttribute('data-remarks') || '';
+      const modal = document.getElementById('remarkModal');
+      const content = document.getElementById('remarkModalContent');
+      if (content) content.textContent = remarks.trim() || 'No remarks provided.';
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    });
+  });
+  document.getElementById('remarkModalClose')?.addEventListener('click', function() {
+    const modal = document.getElementById('remarkModal');
+    if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+  });
+  document.getElementById('remarkModal')?.addEventListener('click', function(e) {
+    if (e.target === this) { this.classList.add('hidden'); this.classList.remove('flex'); }
+  });
+</script>
+
 <?php if (can_manage_requests()): ?>
 <!-- Delete confirmation modal (Super Admin) -->
 <div id="deleteConfirmModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.4);">
@@ -191,7 +231,12 @@ ui_layout_start('Requests - RLI', 'requests');
 <div id="actionConfirmModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.4);">
   <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-md w-full p-6">
     <h3 id="actionConfirmTitle" class="text-lg font-bold text-slate-900 mb-2">Confirm Action</h3>
-    <p id="actionConfirmMessage" class="text-slate-600 mb-6">Are you sure?</p>
+    <p id="actionConfirmMessage" class="text-slate-600 mb-4">Are you sure?</p>
+    <div id="actionDeclineRemarksWrap" class="hidden mb-4">
+      <label for="actionDeclineRemarks" class="block text-sm font-semibold text-slate-700 mb-2">Remarks (optional)</label>
+      <textarea id="actionDeclineRemarks" rows="3" placeholder="Add a message for the requester..."
+        class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 focus:outline-none focus:ring-4 focus:ring-accentYellow/20 focus:border-accentYellow text-slate-900"></textarea>
+    </div>
     <div class="flex gap-3 justify-end">
       <button type="button" id="actionConfirmCancel" class="px-4 py-2 rounded-xl bg-bgGrey hover:bg-slate-200 text-slate-800 font-semibold">Cancel</button>
       <button type="button" id="actionConfirmOk" class="px-4 py-2 rounded-xl text-white font-semibold">Confirm</button>
@@ -264,6 +309,9 @@ ui_layout_start('Requests - RLI', 'requests');
   const actionOk = document.getElementById('actionConfirmOk');
   let actionState = null;
 
+  const remarksWrap = document.getElementById('actionDeclineRemarksWrap');
+  const remarksInput = document.getElementById('actionDeclineRemarks');
+
   function openActionModal(action, requestId) {
     if (!actionModal) return;
     const isApprove = action === 'approve';
@@ -274,6 +322,9 @@ ui_layout_start('Requests - RLI', 'requests');
       : 'Are you sure you want to decline this request?';
     actionOk.textContent = isApprove ? 'Approve' : 'Decline';
     actionOk.className = `px-4 py-2 rounded-xl text-white font-semibold ${isApprove ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`;
+
+    if (remarksWrap) remarksWrap.classList.toggle('hidden', isApprove);
+    if (remarksInput) remarksInput.value = '';
 
     actionModal.classList.remove('hidden');
     actionModal.classList.add('flex');
@@ -289,9 +340,15 @@ ui_layout_start('Requests - RLI', 'requests');
   async function submitAction() {
     if (!actionState) return;
     const { action, requestId } = actionState;
+    const remarks = remarksInput ? remarksInput.value.trim() : '';
     closeActionModal();
     try {
-      const res = await fetch(`<?php echo $base; ?>/requests/${requestId}/${action}`, { method: 'POST' });
+      const opts = { method: 'POST' };
+      if (action === 'decline') {
+        opts.headers = { 'Content-Type': 'application/json' };
+        opts.body = JSON.stringify({ remarks });
+      }
+      const res = await fetch(`<?php echo $base; ?>/requests/${requestId}/${action}`, opts);
       const data = await res.json();
       if (data.success) {
         window.location.reload();

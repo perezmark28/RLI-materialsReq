@@ -28,6 +28,7 @@ class SupplierController extends Controller {
         $offset = ($page - 1) * $limit;
 
         if (!empty($search)) {
+            $search = sanitize_string($search, 200);
             $suppliers = $this->supplierModel->search($search);
             $total = count($suppliers);
         } else {
@@ -101,6 +102,7 @@ class SupplierController extends Controller {
      */
     public function edit($id) {
         require_role(['admin', 'super_admin']);
+        $id = sanitize_int($id);
 
         $supplier = $this->supplierModel->findById($id);
 
@@ -121,6 +123,7 @@ class SupplierController extends Controller {
      */
     public function update($id) {
         require_role(['admin', 'super_admin']);
+        $id = sanitize_int($id);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/suppliers/' . $id . '/edit');
@@ -155,6 +158,7 @@ class SupplierController extends Controller {
      */
     public function delete($id) {
         require_role(['admin', 'super_admin']);
+        $id = sanitize_int($id);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/suppliers/' . $id . '/edit');

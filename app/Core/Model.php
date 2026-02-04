@@ -15,7 +15,7 @@ class Model {
     }
 
     /**
-     * Execute a prepared statement
+     * Execute a prepared statement (SQL injection safe via parameter binding)
      */
     protected function query($sql, $types = '', $params = []) {
         $stmt = $this->conn->prepare($sql);
@@ -25,7 +25,11 @@ class Model {
         }
 
         if (!empty($params) && !empty($types)) {
-            $stmt->bind_param($types, ...$params);
+            $refs = [];
+            foreach ($params as $key => $val) {
+                $refs[$key] = &$params[$key];
+            }
+            \call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $refs));
         }
 
         if (!$stmt->execute()) {

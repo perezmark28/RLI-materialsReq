@@ -4,6 +4,21 @@
  * Authentication and common utilities
  */
 
+/**
+ * Sanitize value as integer (SQL injection safe for IDs)
+ */
+function sanitize_int($value, $default = 0): int {
+    return is_numeric($value) ? (int) $value : $default;
+}
+
+/**
+ * Sanitize string for safe use (max length, trim)
+ */
+function sanitize_string($value, int $maxLength = 1000): string {
+    $trimmed = trim((string) ($value ?? ''));
+    return mb_strlen($trimmed) > $maxLength ? mb_substr($trimmed, 0, $maxLength) : $trimmed;
+}
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

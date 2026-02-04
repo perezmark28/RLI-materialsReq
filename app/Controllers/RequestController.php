@@ -56,7 +56,7 @@ class RequestController extends Controller {
         }
 
         if (!empty($search)) {
-            $filters['search'] = $search;
+            $filters['search'] = sanitize_string($search, 500);
         }
 
         // Get requests
@@ -161,6 +161,7 @@ class RequestController extends Controller {
      */
     public function show($id) {
         require_login();
+        $id = sanitize_int($id);
 
         $request = $this->requestModel->getById($id);
 
@@ -228,6 +229,7 @@ class RequestController extends Controller {
      */
     public function update($id) {
         require_login();
+        $id = sanitize_int($id);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/requests/' . $id . '/edit');
@@ -296,6 +298,7 @@ class RequestController extends Controller {
      */
     public function approve($id) {
         require_role(['admin', 'super_admin']);
+        $id = sanitize_int($id);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/requests/' . $id);
@@ -317,6 +320,7 @@ class RequestController extends Controller {
      */
     public function decline($id) {
         require_role(['admin', 'super_admin']);
+        $id = sanitize_int($id);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/requests/' . $id);
@@ -326,7 +330,13 @@ class RequestController extends Controller {
 
         try {
             $user = current_user();
-            $this->requestModel->updateStatus($id, 'declined', $user['id']);
+            $remarks = '';
+            $raw = file_get_contents('php://input');
+            if ($raw) {
+                $data = json_decode($raw, true);
+                $remarks = sanitize_string($data['remarks'] ?? '', 2000);
+            }
+            $this->requestModel->updateStatus($id, 'declined', $user['id'], $remarks);
             $this->json(['success' => true, 'message' => 'Request declined']);
         } catch (\Exception $e) {
             $this->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
@@ -389,14 +399,92 @@ class RequestController extends Controller {
     }
 
     /**
+     * Printable single request view (same layout as View All Printable)
+     */
+    public function printOne($id) {
+        require_login();
+        $id = sanitize_int($id);
+
+        $request = $this->requestModel->getById($id);
+        if (!$request) {
+            http_response_code(404);
+            echo "Request not found";
+            exit;
+        }
+
+        $user = current_user();
+        $role = current_role();
+        if ($role === 'viewer' && $request['user_id'] != $user['id']) {
+            http_response_code(403);
+            echo "Forbidden";
+            exit;
+        }
+        if ($role === 'admin') {
+            $supervisor = $this->supervisorModel->findByInitials($user['username']);
+            if ($supervisor && $request['supervisor_id'] != $supervisor['id']) {
+                http_response_code(403);
+                echo "Forbidden";
+                exit;
+            }
+        }
+
+        require_once __DIR__ . '/../../includes/db_connect.php';
+        $sql = "
+            SELECT
+              mr.id,
+              mr.requester_name,
+              mr.particulars,
+              mr.date_requested,
+              mr.date_needed,
+              mr.status,
+              approver.full_name AS approver_full_name
+            FROM material_requests mr
+            LEFT JOIN users approver ON mr.approved_by = approver.id
+            WHERE mr.id = ?
+        ";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        if (!$row) {
+            http_response_code(404);
+            echo "Request not found";
+            exit;
+        }
+
+        $itemStmt = $conn->prepare("
+            SELECT item_name, specs, quantity, unit, price, amount
+            FROM request_items
+            WHERE request_id = ?
+            ORDER BY id ASC
+        ");
+        $itemStmt->bind_param("i", $id);
+        $itemStmt->execute();
+        $itemRes = $itemStmt->get_result();
+        $items = [];
+        while ($it = $itemRes->fetch_assoc()) {
+            $items[] = $it;
+        }
+        $row['items'] = $items;
+        $requests = [$row];
+
+        $this->view('requests/print_one', [
+            'requests' => $requests,
+            'requestId' => $id,
+            'base' => defined('BASE_PATH') ? rtrim(BASE_PATH, '/') : ''
+        ]);
+    }
+
+    /**
      * Supervisor info for auto-fill (AJAX)
      */
     public function supervisorInfo($id) {
         require_login();
         header('Content-Type: application/json');
+        $id = sanitize_int($id);
 
         try {
-            $supervisor = $this->supervisorModel->findById((int)$id);
+            $supervisor = $this->supervisorModel->findById($id);
             if (!$supervisor) {
                 $this->json(['success' => false, 'message' => 'Supervisor not found'], 404);
             }
@@ -415,6 +503,7 @@ class RequestController extends Controller {
      * Delete request (Super Admin only; any status allowed for data cleaning)
      */
     public function delete($id) {
+        $id = sanitize_int($id);
         require_role(['super_admin']);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

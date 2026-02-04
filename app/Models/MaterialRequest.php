@@ -56,6 +56,7 @@ class MaterialRequest extends Model {
               mr.date_needed,
               mr.particulars,
               mr.status,
+              mr.decline_remarks,
               mr.created_at,
               u.username,
               s.initials,
@@ -91,6 +92,7 @@ class MaterialRequest extends Model {
               mr.particulars,
               mr.supervisor_id,
               mr.status,
+              mr.decline_remarks,
               mr.created_at,
               u.username,
               s.initials,
@@ -161,9 +163,10 @@ class MaterialRequest extends Model {
     /**
      * Update request status
      */
-    public function updateStatus($id, $status, $approved_by = null) {
-        $sql = "UPDATE material_requests SET status = ?, approved_by = ?, approved_at = NOW() WHERE id = ?";
-        return $this->execute($sql, "sii", [$status, $approved_by, $id]);
+    public function updateStatus($id, $status, $approved_by = null, $remarks = null) {
+        $remarksVal = ($status === 'declined' && $remarks !== null && trim($remarks) !== '') ? trim($remarks) : null;
+        $sql = "UPDATE material_requests SET status = ?, approved_by = ?, approved_at = NOW(), decline_remarks = ? WHERE id = ?";
+        return $this->execute($sql, "sisi", [$status, $approved_by, $remarksVal, $id]);
     }
 
     /**

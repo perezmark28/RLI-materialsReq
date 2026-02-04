@@ -105,6 +105,7 @@ class UserController extends Controller {
      */
     public function edit($id) {
         require_role(['super_admin']);
+        $id = sanitize_int($id);
 
         $user_data = $this->userModel->findById($id);
 
@@ -125,6 +126,7 @@ class UserController extends Controller {
      */
     public function update($id) {
         require_role(['super_admin']);
+        $id = sanitize_int($id);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/users/' . $id . '/edit');
@@ -159,6 +161,7 @@ class UserController extends Controller {
      */
     public function delete($id) {
         require_role(['super_admin']);
+        $id = sanitize_int($id);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('/users/' . $id . '/edit');
