@@ -141,3 +141,49 @@ function ui_public_shell_end(): void {
 <?php
 }
 
+/**
+ * Hero-style landing layout (BR Architects style)
+ * Full-width hero image with centered branding overlay
+ * Add your RLHI image to: assets/images/hero-bg.jpg
+ */
+function ui_public_hero_layout(string $base = ''): void {
+  $heroImage = $base . '/assets/images/hero-bg.jpg';
+?>
+  <!-- Fixed header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+      <a href="<?php echo htmlspecialchars($base ?: '/'); ?>" class="inline-flex items-center gap-2 sm:gap-3 min-w-0">
+        <div class="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
+          <span class="text-base sm:text-xl font-black text-black">RLHI</span>
+        </div>
+        <span class="text-slate-700 font-medium hidden sm:inline truncate">Material Request System</span>
+      </a>
+      <nav class="flex items-center gap-2 sm:gap-4 shrink-0">
+        <a href="<?php echo htmlspecialchars($base); ?>/login" class="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-black text-white font-semibold hover:bg-[#FFCC00] hover:text-black transition rounded">Login</a>
+        <a href="<?php echo htmlspecialchars($base); ?>/signup" class="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-black text-white font-semibold hover:bg-[#FFCC00] hover:text-black transition rounded">Sign Up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero section -->
+  <section class="relative min-h-screen min-h-[100dvh] flex items-center justify-center overflow-hidden pt-16 sm:pt-0"
+           style="background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.25)), url('<?php echo htmlspecialchars($heroImage); ?>') center/cover no-repeat; background-color: #1e293b;">
+    <div class="absolute inset-0 bg-slate-900/20"></div>
+    <div class="relative z-10 text-center px-4 sm:px-6 py-8 sm:py-0 w-full max-w-2xl mx-auto">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">RLHI</h1>
+      <p class="text-white/90 mt-3 sm:mt-4 text-base sm:text-lg md:text-xl max-w-xl mx-auto">A clean internal workflow for submitting, reviewing, and approving material requests.</p>
+      <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center">
+        <a href="<?php echo htmlspecialchars($base); ?>/login" class="px-6 py-3 bg-black text-white font-semibold rounded hover:bg-[#FFCC00] hover:text-black transition shadow-lg text-center">Login</a>
+        <a href="<?php echo htmlspecialchars($base); ?>/signup" class="px-6 py-3 bg-black text-white font-semibold rounded hover:bg-[#FFCC00] hover:text-black transition shadow-lg text-center">Sign Up</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-slate-900 text-white/70 text-sm text-center py-4 px-4">
+    © <?php echo date('Y'); ?> RLHI
+  </footer>
+</body>
+</html>
+<?php
+}
+
