@@ -170,7 +170,7 @@ function ui_public_hero_layout(string $base = ''): void {
            style="background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.25)), url('<?php echo htmlspecialchars($heroImage); ?>') center/cover no-repeat; background-color: #1e293b;">
     <div class="absolute inset-0 bg-slate-900/20"></div>
     <div class="relative z-10 text-center px-4 sm:px-6 py-8 sm:py-0 w-full max-w-2xl mx-auto">
-      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">RLHI</h1>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">RLHI Material Request System</h1>
       <p class="text-white/90 mt-3 sm:mt-4 text-base sm:text-lg md:text-xl max-w-xl mx-auto">A clean internal workflow for submitting, reviewing, and approving material requests.</p>
       <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center">
         <a href="<?php echo htmlspecialchars($base); ?>/login" class="px-6 py-3 bg-black text-white font-semibold rounded hover:bg-[#FFCC00] hover:text-black transition shadow-lg text-center">Login</a>
