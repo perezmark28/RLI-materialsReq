@@ -78,7 +78,7 @@ function ui_layout_start(string $title, string $active = ''): void {
       theme: {
         extend: {
           fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
-          colors: { accentYellow: '#FACC15', bgGrey: '#F4F7FE', ink: '#0B0B0C' },
+          colors: { accentYellow: '#CCB38A', bgGrey: '#F4F7FE', ink: '#0B0B0C' },
           borderRadius: { card: '24px' },
           boxShadow: { soft: '0 10px 30px rgba(17, 24, 39, 0.08)' }
         }
@@ -103,9 +103,9 @@ function ui_layout_start(string $title, string $active = ''): void {
     [type="submit"]:not([disabled]):hover,
     [role="button"]:hover,
     .btn:hover {
-      background-color: #FFCC00;
+      background-color: #CCB38A;
       color: #000;
-      border-color: #FFCC00;
+      border-color: #CCB38A;
       transform: translateY(-2px);
       box-shadow: var(--rli-hover-shadow);
     }
@@ -128,8 +128,8 @@ function ui_layout_start(string $title, string $active = ''): void {
     a:hover {
       opacity: .95;
       color: #000;
-      background-color: #FFCC00;
-      border-color: #FFCC00;
+      background-color: #CCB38A;
+      border-color: #CCB38A;
       box-shadow: var(--rli-hover-shadow);
       transform: translateY(-1px);
     }
@@ -155,8 +155,8 @@ function ui_layout_start(string $title, string $active = ''): void {
     .rounded-2xl.cursor-pointer:hover {
       transform: translateY(-3px);
       box-shadow: 0 25px 45px rgba(15, 23, 42, 0.15);
-      border-color: #FFCC00;
-      background-color: #FFF8DA;
+      border-color: #CCB38A;
+      background-color: #F5EDE0;
     }
   </style>
 </head>
@@ -171,9 +171,7 @@ function ui_layout_start(string $title, string $active = ''): void {
           </svg>
         </button>
         <div class="flex items-center gap-2">
-          <div class="h-9 w-9 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
-            <span class="text-sm font-black text-black">RLHI</span>
-          </div>
+          <img src="<?php echo htmlspecialchars($base); ?>/assets/images/logo-icon.png" alt="RLHI" class="h-9 w-9 rounded-full object-cover shrink-0" />
           <span class="font-bold text-slate-900">RLHI</span>
         </div>
         <a href="<?php echo $base; ?>/logout" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-red-600 text-white text-xs font-semibold shadow-sm hover:bg-red-700">
@@ -196,9 +194,7 @@ function ui_layout_start(string $title, string $active = ''): void {
              transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out">
       <div class="mb-6 flex items-start justify-between gap-3">
         <div class="flex items-center gap-3">
-          <div class="h-12 w-12 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
-            <span class="text-xl font-black text-black">RLHI</span>
-          </div>
+          <img src="<?php echo htmlspecialchars($base); ?>/assets/images/logo-icon.png" alt="RLHI" class="h-12 w-12 rounded-full object-cover shrink-0" />
           <div>
             <div class="text-2xl font-bold tracking-tight">RLHI</div>
             <div class="text-white/70 text-sm mt-1">Material Request System</div>
@@ -261,7 +257,7 @@ function ui_layout_start(string $title, string $active = ''): void {
             $cls = 'bg-slate-100 text-slate-800 border-slate-200';
             if ($t === 'success') $cls = 'bg-green-50 text-green-800 border-green-200';
             if ($t === 'error') $cls = 'bg-red-50 text-red-800 border-red-200';
-            if ($t === 'warning') $cls = 'bg-yellow-50 text-yellow-900 border-yellow-200';
+            if ($t === 'warning') $cls = 'bg-[#F5EDE0] text-[#5c4a2e] border-[#CCB38A]';
           ?>
           <div class="mb-5 rounded-2xl border px-4 py-3 text-sm font-semibold <?php echo $cls; ?>">
             <?php echo htmlspecialchars($flash['message']); ?>

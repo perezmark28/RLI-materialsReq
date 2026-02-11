@@ -1,7 +1,7 @@
 <?php
 /**
  * Split-Screen Login / Sign Up with sliding decorative panel
- * Theme: Black (#000000), Golden Yellow (#FFCC00), soft gray background
+ * Theme: Black (#000000), accent #CCB38A, soft gray background
  * Expects: $base, $error (optional), $username, $full_name, $email, $initialForm ('login'|'signup')
  */
 $base = $base ?? (defined('BASE_PATH') ? BASE_PATH : '');
@@ -21,7 +21,7 @@ $showSignup = ($initialForm === 'signup');
         extend: {
           colors: {
             primaryBlack: '#000000',
-            primaryYellow: '#FFCC00',
+            primaryYellow: '#CCB38A',
           }
         }
       }
@@ -40,6 +40,7 @@ $showSignup = ($initialForm === 'signup');
            class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-100' : 'opacity-0 pointer-events-none'; ?> lg:absolute lg:inset-0 lg:flex lg:items-center"
            style="<?php echo !$showSignup ? 'visibility: hidden' : ''; ?>">
         <div class="w-full px-4">
+          <img src="<?php echo htmlspecialchars($base); ?>/assets/images/logo-icon.png" alt="RLHI" class="h-12 w-12 object-contain mb-4 lg:hidden" onerror="this.style.display='none'" />
           <h1 class="text-2xl font-bold text-gray-900">Create account</h1>
           <p class="text-gray-500 mt-1 text-sm">Fill in your details to get started.</p>
 
@@ -55,31 +56,31 @@ $showSignup = ($initialForm === 'signup');
                 <label for="signup_full_name" class="block text-sm font-semibold text-gray-700 mb-1.5">Full Name</label>
                 <input id="signup_full_name" name="full_name" type="text" required
                   value="<?php echo htmlspecialchars($full_name ?? ''); ?>"
-                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition">
+                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-[#CCB38A] focus:ring-2 focus:ring-[#CCB38A]/30 outline-none transition">
               </div>
               <div>
                 <label for="signup_email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
                 <input id="signup_email" name="email" type="email" required
                   value="<?php echo htmlspecialchars($email ?? ''); ?>"
-                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition">
+                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-[#CCB38A] focus:ring-2 focus:ring-[#CCB38A]/30 outline-none transition">
               </div>
             </div>
             <div>
               <label for="signup_username" class="block text-sm font-semibold text-gray-700 mb-1.5">Username</label>
               <input id="signup_username" name="username" type="text" required
                 value="<?php echo htmlspecialchars($username ?? ''); ?>"
-                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition">
+                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-[#CCB38A] focus:ring-2 focus:ring-[#CCB38A]/30 outline-none transition">
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label for="signup_password" class="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
                 <input id="signup_password" name="password" type="password" required
-                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition">
+                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-[#CCB38A] focus:ring-2 focus:ring-[#CCB38A]/30 outline-none transition">
               </div>
               <div>
                 <label for="signup_confirm_password" class="block text-sm font-semibold text-gray-700 mb-1.5">Confirm Password</label>
                 <input id="signup_confirm_password" name="confirm_password" type="password" required
-                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition">
+                  class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-[#CCB38A] focus:ring-2 focus:ring-[#CCB38A]/30 outline-none transition">
               </div>
             </div>
             <button type="submit" class="w-full py-3.5 rounded-xl bg-black text-white font-semibold hover:bg-gray-800 transition mt-1">
@@ -101,6 +102,7 @@ $showSignup = ($initialForm === 'signup');
            class="form-fade max-w-sm mx-auto w-full <?php echo $showSignup ? 'opacity-0 pointer-events-none' : 'opacity-100'; ?> lg:absolute lg:inset-0 lg:flex lg:items-center"
            style="<?php echo $showSignup ? 'visibility: hidden' : ''; ?>">
         <div class="w-full px-4">
+          <img src="<?php echo htmlspecialchars($base); ?>/assets/images/logo-icon.png" alt="RLHI" class="h-12 w-12 object-contain mb-4 lg:hidden" onerror="this.style.display='none'" />
           <h1 class="text-2xl font-bold text-gray-900">Welcome home</h1>
           <p class="text-gray-500 mt-1 text-sm">Enter your credentials to continue.</p>
 
@@ -115,12 +117,12 @@ $showSignup = ($initialForm === 'signup');
               <label for="username" class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
               <input id="username" name="username" type="text" required autofocus
                 value="<?php echo htmlspecialchars($username ?? ''); ?>"
-                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition">
+                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-[#CCB38A] focus:ring-2 focus:ring-[#CCB38A]/30 outline-none transition">
             </div>
             <div>
               <label for="password" class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
               <input id="password" name="password" type="password" required
-                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 outline-none transition">
+                class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 focus:border-[#CCB38A] focus:ring-2 focus:ring-[#CCB38A]/30 outline-none transition">
             </div>
             <button type="submit" class="w-full py-3 rounded-xl bg-black text-white font-semibold hover:bg-gray-800 transition">
               Login
@@ -150,8 +152,9 @@ $showSignup = ($initialForm === 'signup');
     <!-- Decorative panel overlay (tablet/desktop only): slides left → right (0.6s ease-in-out) -->
     <div id="decorativePanel" class="panel-slide hidden lg:flex absolute top-0 bottom-0 w-1/2 z-20 flex-col justify-between p-8 lg:p-10 bg-black text-white rounded-l-3xl <?php echo $showSignup ? 'left-1/2 rounded-l-none rounded-r-3xl' : 'left-0'; ?>">
       <div>
-        <div class="flex items-center gap-3">
-          <div class="h-12 w-12 rounded-full bg-[#FFCC00] flex items-center justify-center shrink-0">
+        <div class="flex items-center gap-4">
+          <img src="<?php echo htmlspecialchars($base); ?>/assets/images/logo-icon.png" alt="RLHI" class="h-14 w-14 sm:h-16 sm:w-16 object-contain shrink-0" onerror="this.onerror=null; this.style.display='none'; var f=this.nextElementSibling; if(f) f.classList.remove('hidden');" />
+          <div class="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-[#CCB38A] flex items-center justify-center shrink-0 hidden">
             <span class="text-xl font-black text-black">RLHI</span>
           </div>
           <div>

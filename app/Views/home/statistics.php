@@ -24,7 +24,7 @@ ui_layout_start('Statistics - RLHI', 'statistics');
   </div>
   <div class="rounded-2xl border border-slate-100 bg-bgGrey p-5">
     <div class="text-slate-600 text-sm font-semibold">Pending</div>
-    <div class="text-3xl font-bold text-yellow-600 mt-2"><?php echo $stats['pending'] ?? 0; ?></div>
+    <div class="text-3xl font-bold text-[#CCB38A] mt-2"><?php echo $stats['pending'] ?? 0; ?></div>
   </div>
   <div class="rounded-2xl border border-slate-100 bg-bgGrey p-5">
     <div class="text-slate-600 text-sm font-semibold">Approved</div>
