@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS supervisors (
 INSERT INTO supervisors (initials, email, mobile) VALUES
 ('APL', 'apl.admin@lic.ph', '09170000003'),
 ('MTS', 'mts.admin@lic.ph', '09170000001'),
-('PJJ', 'pjj.admin@lic.ph', '+63 9178187240'),
+('PJJ', 'pjj.admin@lic.ph', '+639178187240'),
 ('ALU', 'alu.admin@lic.ph', '09170000002')
 ON DUPLICATE KEY UPDATE email=VALUES(email), mobile=VALUES(mobile);
 
