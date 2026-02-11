@@ -10,5 +10,5 @@ ALTER TABLE supervisors ADD COLUMN mobile VARCHAR(30) NULL AFTER email;
 UPDATE supervisors SET mobile = '09170000003' WHERE initials = 'APL';
 UPDATE supervisors SET mobile = '09170000001' WHERE initials = 'MTS';
 UPDATE supervisors SET mobile = '+639178187240' WHERE initials = 'PJJ';
-UPDATE supervisors SET mobile = '09170000002' WHERE initials = 'ALU';
+UPDATE supervisors SET mobile = '+639178187240' WHERE initials = 'ALU';
 
