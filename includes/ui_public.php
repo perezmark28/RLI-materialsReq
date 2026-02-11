@@ -207,16 +207,16 @@ function ui_public_hero_layout(string $base = ''): void {
   </section>
 
   <footer class="bg-black text-white/90">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
         <!-- Company -->
-        <div>
-          <img src="<?php echo htmlspecialchars($base); ?>/assets/images/logo-icon.png" alt="RLHI" class="h-10 w-auto mb-3 object-contain" />
+        <div class="text-center sm:text-left">
+          <img src="<?php echo htmlspecialchars($base); ?>/assets/images/logo-icon.png" alt="RLHI" class="h-10 w-auto mb-3 mx-auto sm:mx-0 object-contain" />
           <p class="text-sm font-semibold text-white mb-2">RUDOLF LIETZ, INC.</p>
-          <p class="text-white/70 text-sm leading-relaxed">Creating exceptional architectural experiences that blend form, function, and innovation.</p>
+          <p class="text-white/70 text-sm leading-relaxed max-w-xs mx-auto sm:mx-0">Creating exceptional architectural experiences that blend form, function, and innovation.</p>
         </div>
         <!-- Navigation -->
-        <div>
+        <div class="text-center sm:text-left">
           <h3 class="text-sm font-semibold text-[#CCB38A] uppercase tracking-wide mb-4">Navigation</h3>
           <ul class="space-y-2 text-sm text-white/80">
             <li><a href="<?php echo htmlspecialchars($base); ?>/" class="hover:text-[#CCB38A] transition">Home</a></li>
@@ -225,7 +225,7 @@ function ui_public_hero_layout(string $base = ''): void {
           </ul>
         </div>
         <!-- Services / Features -->
-        <div>
+        <div class="text-center sm:text-left">
           <h3 class="text-sm font-semibold text-[#CCB38A] uppercase tracking-wide mb-4">Features</h3>
           <ul class="space-y-2 text-sm text-white/80">
             <li>Create Request</li>
@@ -235,7 +235,7 @@ function ui_public_hero_layout(string $base = ''): void {
           </ul>
         </div>
         <!-- Contact -->
-        <div>
+        <div class="text-center sm:text-left">
           <h3 class="text-sm font-semibold text-[#CCB38A] uppercase tracking-wide mb-4">Contact</h3>
           <ul class="space-y-3 text-sm text-white/80">
             <li class="flex items-start gap-2">
