@@ -163,14 +163,12 @@ class RequestController extends Controller {
                 }
 
                 if ($smsTo !== '' && function_exists('httpsms_send')) {
-                    $viewUrl = app_url('/requests/' . $request_id);
-                    $shortUrl = function_exists('try_shorten_url') ? try_shorten_url($viewUrl) : $viewUrl;
+                    // Simple notification text only (no link)
                     $msg = sprintf(
-                        "New Material Request #%d from %s. Date needed: %s. Review: %s",
+                        "Admin! You have a material request to approve. Request #%d from %s. Date needed: %s.",
                         (int)$request_id,
                         $requester_name,
-                        $date_needed,
-                        $shortUrl
+                        $date_needed
                     );
                     $smsResult = httpsms_send($smsTo, $msg);
                     $smsStatus = $smsResult['success'] ? 'sent' : 'failed';
