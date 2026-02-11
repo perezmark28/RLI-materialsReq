@@ -10,6 +10,8 @@ use App\Models\MaterialRequest;
 use App\Models\Supervisor;
 use App\Models\User;
 
+require_once dirname(__DIR__, 2) . '/includes/sms.php';
+
 class RequestController extends Controller {
     private $requestModel;
     private $supervisorModel;
@@ -149,7 +151,42 @@ class RequestController extends Controller {
                 ]);
             }
 
-            $this->json(['success' => true, 'message' => 'Request created successfully', 'request_id' => $request_id]);
+            // SMS notification (do not block request creation on SMS failure)
+            $smsStatus = null;
+            try {
+                $supervisor = $this->supervisorModel->findById($supervisor_id);
+                $smsTo = $this->normalizeMobileE164($supervisor['mobile'] ?? '');
+
+                // Fallback to configured admin recipient if supervisor mobile is missing/invalid
+                if ($smsTo === '' && defined('HTTPSMS_ADMIN_TO')) {
+                    $smsTo = $this->normalizeMobileE164((string)HTTPSMS_ADMIN_TO);
+                }
+
+                if ($smsTo !== '' && function_exists('httpsms_send')) {
+                    $viewUrl = app_url('/requests/' . $request_id);
+                    $shortUrl = function_exists('try_shorten_url') ? try_shorten_url($viewUrl) : $viewUrl;
+                    $msg = sprintf(
+                        "New Material Request #%d from %s. Date needed: %s. Review: %s",
+                        (int)$request_id,
+                        $requester_name,
+                        $date_needed,
+                        $shortUrl
+                    );
+                    $smsResult = httpsms_send($smsTo, $msg);
+                    $smsStatus = $smsResult['success'] ? 'sent' : 'failed';
+                } else {
+                    $smsStatus = 'skipped';
+                }
+            } catch (\Throwable $smsEx) {
+                $smsStatus = 'failed';
+            }
+
+            $this->json([
+                'success' => true,
+                'message' => 'Request created successfully',
+                'request_id' => $request_id,
+                'sms_status' => $smsStatus
+            ]);
 
         } catch (\Exception $e) {
             $this->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
@@ -553,5 +590,33 @@ class RequestController extends Controller {
         return array_filter($items, function($item) {
             return !empty($item['item_name']);
         });
+    }
+
+    /**
+     * Normalize local/PH mobile to E.164 (e.g., 09171234567 -> +639171234567).
+     */
+    private function normalizeMobileE164(string $mobile): string {
+        $value = trim($mobile);
+        if ($value === '') {
+            return '';
+        }
+
+        $digits = preg_replace('/\D+/', '', $value);
+        if (!is_string($digits) || $digits === '') {
+            return '';
+        }
+
+        if (strlen($digits) === 11 && str_starts_with($digits, '09')) {
+            return '+63' . substr($digits, 1);
+        }
+        if (strlen($digits) === 12 && str_starts_with($digits, '639')) {
+            return '+' . $digits;
+        }
+
+        if (str_starts_with($value, '+')) {
+            return '+' . $digits;
+        }
+
+        return '';
     }
 }
