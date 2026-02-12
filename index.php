@@ -106,13 +106,6 @@ if (!empty($base_path) && strpos($path, $base_path) === 0) {
 }
 $path = $path ?: '/';
 
-// One-time: update supervisor mobiles (remove this block after use)
-$pathNormalized = rtrim(parse_url($path, PHP_URL_PATH) ?: $path, '/');
-if (($pathNormalized === '/update-supervisor-mobiles' || $pathNormalized === '/update_supervisor_mobiles_once') && file_exists(__DIR__ . '/update_supervisor_mobiles_once.php')) {
-    require __DIR__ . '/update_supervisor_mobiles_once.php';
-    exit;
-}
-
 // Debug logging
 if (APP_ENV === 'development') {
     error_log("Computed base_path: " . $base_path);
